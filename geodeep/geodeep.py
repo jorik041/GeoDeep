@@ -1,5 +1,6 @@
 import rasterio
 import numpy as np
+from rasterio.enums import ColorInterp as ci
 from .slidingwindow import generate_for_size
 from .models import get_model_file
 from .inference import create_session
@@ -72,8 +73,14 @@ def run(geotiff, model, output_type='default',
 
         # Skip alpha
         indexes = raster.indexes
-        if len(indexes) > 1 and raster.colorinterp[-1] == rasterio.enums.ColorInterp.alpha:
+        if len(indexes) > 1 and raster.colorinterp[-1] == ci.alpha:
             indexes = indexes[:-1]
+        # Try to select RGB channels if there are more than 3 channels provided
+        if len(raster.indexes) > 3:
+            propesed_indexes = [i for i, x in zip(raster.indexes, raster.colorinterp) if x in [ci.red, ci.green, ci.blue]]
+            # check if we found at least 3 channels
+            if len(propesed_indexes) >= 3:
+                indexes = propesed_indexes
 
         num_wins = len(windows)
         progress_per_win = 90 / num_wins if num_wins > 0 else 0
