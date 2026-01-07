@@ -1,5 +1,6 @@
 import rasterio
 import numpy as np
+from rasterio.enums import ColorInterp as ci
 from .slidingwindow import generate_for_size
 from .models import get_model_file
 from .inference import create_session
@@ -70,9 +71,13 @@ def run(geotiff, model, output_type='default',
         if segmentor:
             mask = np.zeros((height // scale_factor, width // scale_factor), dtype=np.uint8)
 
-        # Skip alpha
         indexes = raster.indexes
-        if len(indexes) > 1 and raster.colorinterp[-1] == rasterio.enums.ColorInterp.alpha:
+        color_idx = dict(zip(raster.colorinterp, raster.indexes))
+        if all(c in color_idx.keys() for c in [ci.red, ci.green, ci.blue]):
+            # try to select RGB indexes if possible
+            indexes = (color_idx[ci.red], color_idx[ci.green], color_idx[ci.blue])
+        elif len(indexes) > 1 and raster.colorinterp[-1] == ci.alpha:
+            # when selecting RGB is not possible, drop alpha channel if present
             indexes = indexes[:-1]
 
         num_wins = len(windows)
