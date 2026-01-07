@@ -71,16 +71,14 @@ def run(geotiff, model, output_type='default',
         if segmentor:
             mask = np.zeros((height // scale_factor, width // scale_factor), dtype=np.uint8)
 
-        # Skip alpha
         indexes = raster.indexes
-        if len(indexes) > 1 and raster.colorinterp[-1] == ci.alpha:
+        color_idx = dict(zip(raster.colorinterp, raster.indexes))
+        if all(c in color_idx.keys() for c in [ci.red, ci.green, ci.blue]):
+            # try to select RGB indexes if possible
+            indexes = (color_idx[ci.red], color_idx[ci.green], color_idx[ci.blue])
+        elif len(indexes) > 1 and raster.colorinterp[-1] == ci.alpha:
+            # when selecting RGB is not possible, drop alpha channel if present
             indexes = indexes[:-1]
-        # Try to select RGB channels if there are more than 3 channels provided
-        if len(raster.indexes) > 3:
-            propesed_indexes = [i for i, x in zip(raster.indexes, raster.colorinterp) if x in [ci.red, ci.green, ci.blue]]
-            # check if we found at least 3 channels
-            if len(propesed_indexes) >= 3:
-                indexes = propesed_indexes
 
         num_wins = len(windows)
         progress_per_win = 90 / num_wins if num_wins > 0 else 0
