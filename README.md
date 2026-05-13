@@ -200,6 +200,14 @@ input_shape: [1, 3, 640, 640]
 input_name: images
 ```
 
+## Converting Existing YOLO Detection Models
+
+```bash
+yolo2geodeep /path/to/weights.pt 10 --det-type YOLO_v8 --classes car,bus
+```
+
+See also `yolo2geodeep --help`.
+
 ## Why GeoDeep?
 
 Compared to other software packages (e.g. [Deepness](https://github.com/PUTvision/qgis-plugin-deepness)), GeoDeep relies only on two dependencies, `rasterio` and `onnxruntime`. This makes it simple and lightweight.

@@ -72,7 +72,7 @@ def main():
     parser.add_argument(
         "--det-type", 
         type=str,
-        default=None,
+        default="YOLO_v7",
         help="Detector type"
     )
     parser.add_argument(
@@ -100,7 +100,7 @@ def main():
     out_model = os.path.splitext(args.input)[0] + ".onnx"
     out_model_optim = os.path.splitext(args.input)[0] + ".optim.onnx"
     out_model_quant = os.path.splitext(args.input)[0] + ".quant.onnx"
-    det_type = "YOLO_v7"
+    det_type = args.det_type
 
     args_yaml = os.path.join(os.path.dirname(args.input), "..", "args.yaml")
     if args.classes is None and os.path.isfile(args_yaml):
