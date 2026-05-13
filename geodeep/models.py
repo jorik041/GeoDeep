@@ -17,6 +17,7 @@ MODELS = {
     'buildings': 'buildings_ramp_XUnet_256.onnx',
     'roads': 'road_segmentation_model_with_metadata_26_10_22.onnx',
     'utilities': 'utilities-811-yolo8.onnx',
+    'waldo30_nano': 'waldo30_nano.onnx'
     
     # TODO add more
 }
